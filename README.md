@@ -1,4 +1,4 @@
-SQL Projects
+# SQL Projects
 
 This repository contains a collection of SQL projects that I worked on while studying the subject. The projects were developed using MySQL and SSMS (SQL Server Management Studio), and cover a range of topics such as data modeling, query optimization, and database design.
 
