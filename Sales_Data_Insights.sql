@@ -1,0 +1,95 @@
+
+/*
+1.
+The code executes a SQL query that selects the customer's full name, order date, order number, total order amount, 
+and category name for each order that has been placed. 
+The results are grouped by the customer's name, order date, order number, category name, and unit price.
+*/
+
+SELECT
+(C.PRIMEIRO_NOME + ' ' + C.MEIO_NOME + ' ' + C.ULTIMO_NOME) NOME_COMPLETO,
+PE.DATA_PEDIDO,
+PE.NUMERO_PEDIDO,
+(SUM(DP.QUANTIDADE_PEDIDO) * DP.PRECO_UNITARIO) TOTAL_PEDIDO,
+CP.NOME NOME_CATEGORIA
+FROM VENDA.CLIENTE AS C
+INNER JOIN VENDA.PEDIDO AS PE ON C.ID_CLIENTE = PE.ID_CLIENTE
+INNER JOIN VENDA.DETALHE_PEDIDO AS DP ON PE.ID_PEDIDO = DP.ID_PEDIDO
+INNER JOIN VENDA.PRODUTO AS P ON DP.ID_PRODUTO = P.ID_PRODUTO
+INNER JOIN VENDA.CATEGORIA_PRODUTO AS CP ON P.ID_CATEGORIA_PRODUTO = CP.ID_CATEGORIA_PRODUTO
+GROUP BY C.PRIMEIRO_NOME, C.MEIO_NOME, C.ULTIMO_NOME, PE.DATA_PEDIDO, PE.NUMERO_PEDIDO, CP.NOME, DP.PRECO_UNITARIO
+
+/*
+2.
+The code creates a temporary table called #DIRETORIA with three columns: ID_DIRETORIA, NOME_DIRETORIA, and DATA_CADASTRO. 
+It then inserts four rows into this table and updates the first row's data. Finally, it selects all data from the temporary table.
+*/
+
+CREATE TABLE #DIRETORIA
+(ID_DIRETORIA INT PRIMARY KEY IDENTITY,
+NOME_DIRETORIA VARCHAR(200) NOT NULL,
+DATA_CADASTRO DATE)
+
+INSERT INTO #DIRETORIA (NOME_DIRETORIA) VALUES ('MATRIZ')
+INSERT INTO #DIRETORIA (NOME_DIRETORIA, DATA_CADASTRO) VALUES ('REGIONAL 1', '2022-01-01')
+INSERT INTO #DIRETORIA (NOME_DIRETORIA, DATA_CADASTRO) VALUES ('REGIONAL 2', '2022-03-08')
+INSERT INTO #DIRETORIA (NOME_DIRETORIA, DATA_CADASTRO) VALUES ('REGIONAL 3', '2022-04-08')
+
+UPDATE #DIRETORIA
+SET #DIRETORIA.DATA_CADASTRO = '2021-01-01'
+WHERE #DIRETORIA.ID_DIRETORIA = 1
+
+SELECT * FROM #DIRETORIA
+
+/*
+3.
+The code selects the product name, model name, category name, standard cost, 
+and the number of years since the product was first sold for each product in the VENDA database. 
+The results are filtered to only include products that have never been sold.
+*/
+
+SELECT
+P.NOME NOME_PRODUTO,
+MP.NOME NOME_MODELO,
+CP.NOME NOME_CATEGORIA,
+P.CUSTO_PADRAO,
+DATEDIFF(YEAR,GETDATE(),P.DATA_INICIO_VENDA) ANOS_VENDA
+FROM VENDA.PRODUTO AS P
+INNER JOIN VENDA.MODELO_PRODUTO AS MP ON P.ID_MODELO_PRODUTO = MP.ID_MODELO_PRODUTO
+INNER JOIN VENDA.CATEGORIA_PRODUTO AS CP ON P.ID_CATEGORIA_PRODUTO = CP.ID_CATEGORIA_PRODUTO 
+LEFT JOIN VENDA.DETALHE_PEDIDO AS DP ON P.ID_PRODUTO = DP.ID_PRODUTO
+WHERE QUANTIDADE_PEDIDO IS NULL
+
+/*
+4.
+The code selects the customer's company name, the sum of the quantities ordered for black-colored products, 
+and the total quantity ordered for each company that has placed an order. 
+The results are grouped by the customer's company name.
+*/
+
+SELECT
+C.COMPANHIA COMPANHIA_CLIENTE,
+SUM(CASE WHEN P.COR = 'Black' THEN DP.QUANTIDADE_PEDIDO ELSE 0 END) SOMA_COR,
+SUM(DP.QUANTIDADE_PEDIDO) SOMA_TOTAL
+FROM VENDA.CLIENTE AS C
+INNER JOIN VENDA.PEDIDO AS PE ON C.ID_CLIENTE = PE.ID_CLIENTE
+INNER JOIN VENDA.DETALHE_PEDIDO AS DP ON PE.ID_PEDIDO = DP.ID_PEDIDO
+INNER JOIN VENDA.PRODUTO AS P ON DP.ID_PRODUTO = P.ID_PRODUTO
+GROUP BY C.COMPANHIA
+
+/*
+5.
+The code selects the customer's first and last names and their address details, such as city, state, and region, 
+for all customers in the United States in the state of Texas.
+*/
+
+SELECT 
+C.PRIMEIRO_NOME,
+C.ULTIMO_NOME,
+E.CIDADE,
+E.ESTADO,
+E.REGIAO
+FROM VENDA.CLIENTE AS C
+INNER JOIN VENDA.CLIENTE_ENDERECO AS CE ON C.ID_CLIENTE = CE.ID_CLIENTE
+INNER JOIN VENDA.ENDERECO AS E ON CE.ID_ENDERECO = E.ID_ENDERECO
+WHERE E.REGIAO = 'United States' AND E.ESTADO = 'Texas'
