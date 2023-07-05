@@ -1,3 +1,8 @@
+---
+language: sql
+---
+
+
 # SQL Repository
 This repository contains a collection of SQL scripts and queries that I have developed during my learning journey in the field of database management and SQL programming.
 
