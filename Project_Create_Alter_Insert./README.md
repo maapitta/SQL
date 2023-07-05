@@ -4,18 +4,18 @@ This repository contains a SQL script that creates a database schema using the M
 ## Schema
 The schema consists of three tables: PAIS, ESTADO, and CIDADE. Here is the schema definition:
 
-## PAIS
+### PAIS
 - ID_PAIS (INT) - Primary key, auto-incremented.
 - NOME_PAIS (VARCHAR(100)) - Unique name of the country, not nullable.
 - CONTINENTE (VARCHAR(100)) - Name of the continent, not nullable.
 
-## ESTADO
+### ESTADO
 - ID_ESTADO (INT) - Primary key, auto-incremented.
 - NOME_ESTADO (VARCHAR(100)) - Name of the state, not nullable.
 - UF (CHAR(2)) - State abbreviation.
 - PAIS (INT) - Foreign key referencing the ID_PAIS column in the PAIS table.
 
-## CIDADE
+### CIDADE
 - ID_CIDADE (INT) - Primary key, auto-incremented.
 - NOME_CIDADE (VARCHAR(100)) - Name of the city, not nullable.
 - ESTADO (INT) - Foreign key referencing the ID_ESTADO column in the ESTADO table.
